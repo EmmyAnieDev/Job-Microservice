@@ -1,0 +1,84 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & packages
+.env*
+!.env.sample
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+.hypothesis/
+.tox/
+.nox/
+htmlcov/
+cover/
+
+# Jupyter and IPython
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# VSCode, PyCharm, Spyder
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+
+# Flask/Django stuff
+instance/
+*.db
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Mailer temp/test files
+result.json
+*.rdb
+*.celery.log
+.celerybeat-schedule
+
+# Ignore Mac/OS & system files
+**/.DS_Store
+
+# Others
+.dmypy.json
+.pytype/
+.pyre/
+.pybuilder/
+target/
+cython_debug/
+
+# Firebase service account file
+app/api/db/serviceAccountKey.json
+serviceAccountKey.json
+
+# Ignore the app.yaml file to prevent sensitive information from being committed
+# This file contains configuration for Google Cloud App Engine deployment and may include secrets like API keys, email credentials, etc.
+app.yaml
