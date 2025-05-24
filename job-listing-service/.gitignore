@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.python-version
 
 # Environment & packages
 .env*
@@ -12,6 +13,7 @@ env/
 ENV/
 env.bak/
 venv.bak/
+test_venv
 
 # Python build artifacts
 build/
