@@ -32,8 +32,8 @@ pipeline {
 
                 // Create virtual environment, activate it, and install dependencies
                 sh """
-                    ${PYTHON_PATH} -m venv ${VENV}
-                    . ${VENV}/bin/activate
+                    "${PYTHON_PATH}" -m venv "${VENV}"
+                    . "${VENV}/bin/activate"
                     pip install --upgrade pip
                     pip install -r requirements.txt
                     pip freeze > requirements.lock
@@ -47,9 +47,9 @@ pipeline {
 
                 // Activate virtualenv, install flake8, and run linting
                 sh """
-                    . ${VENV}/bin/activate
+                    . "${VENV}/bin/activate"
                     pip install flake8
-                    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics '--exclude=venv/,.*,__pycache__,docs/'
+                    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv/,.*,__pycache__,docs/
                 """
             }
         }
@@ -58,7 +58,7 @@ pipeline {
             steps {
                 echo 'Running tests with pytest and generating coverage report...'
                 sh """
-                    . ${VENV}/bin/activate
+                    . "${VENV}/bin/activate"
                     pip install pytest pytest-cov
                     mkdir -p test-reports
                     pytest --junitxml=test-reports/results.xml --cov=. --cov-report=xml:coverage.xml
@@ -78,7 +78,7 @@ pipeline {
 
                 // Activate virtualenv, install build tool, and create distributable package
                 sh """
-                    . ${VENV}/bin/activate
+                    . "${VENV}/bin/activate"
                     pip install build
                     rm -rf dist/  # Clean previous artifacts to avoid cached wheel files
                     python -m build
