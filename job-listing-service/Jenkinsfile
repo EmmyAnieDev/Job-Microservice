@@ -4,13 +4,13 @@ pipeline {
     environment {
         // Get the Python path from the environment
         PYTHON_PATH = sh(script: 'which python3', returnStdout: true).trim()
-
         // Define path to the virtual environment inside the workspace
-        VENV = "${WORKSPACE}/venv"
+        VENV = "${WORKSPACE}/job-listing-service/venv"
+        // Define the service directory
+        SERVICE_DIR = "${WORKSPACE}/job-listing-service"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -20,7 +20,6 @@ pipeline {
         stage('Init') {
             steps {
                 script {
-                    // We're always working on main branch directly
                     echo "Working on main branch, direct push workflow"
                 }
             }
@@ -29,9 +28,12 @@ pipeline {
         stage('Setup') {
             steps {
                 echo 'Setting up Python virtual environment and installing dependencies...'
-
-                // Create virtual environment, activate it, and install dependencies
                 sh """
+                    cd "${SERVICE_DIR}"
+                    if [ ! -f requirements.txt ]; then
+                        echo "ERROR: requirements.txt not found in ${SERVICE_DIR}"
+                        exit 1
+                    fi
                     "${PYTHON_PATH}" -m venv "${VENV}"
                     . "${VENV}/bin/activate"
                     pip install --upgrade pip
@@ -44,9 +46,8 @@ pipeline {
         stage('Lint') {
             steps {
                 echo 'Running flake8 linter to check code quality...'
-
-                // Activate virtualenv, install flake8, and run linting
                 sh """
+                    cd "${SERVICE_DIR}"
                     . "${VENV}/bin/activate"
                     pip install flake8
                     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv/,.*,__pycache__,docs/
@@ -58,6 +59,7 @@ pipeline {
             steps {
                 echo 'Running tests with pytest and generating coverage report...'
                 sh """
+                    cd "${SERVICE_DIR}"
                     . "${VENV}/bin/activate"
                     pip install pytest pytest-cov
                     mkdir -p test-reports
@@ -66,8 +68,10 @@ pipeline {
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: 'test-reports/results.xml'
-                    publishCoverage adapters: [coberturaAdapter(path: 'coverage.xml')]
+                    dir("${SERVICE_DIR}") {
+                        junit allowEmptyResults: true, testResults: 'test-reports/results.xml'
+                        publishCoverage adapters: [coberturaAdapter(path: 'coverage.xml')]
+                    }
                 }
             }
         }
@@ -75,14 +79,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Python package from source...'
-
-                // Activate virtualenv, install build tool, and create distributable package
-                sh """
-                    . "${VENV}/bin/activate"
-                    pip install build
-                    rm -rf dist/  # Clean previous artifacts to avoid cached wheel files
-                    python -m build
-                """
             }
         }
     }
@@ -90,17 +86,14 @@ pipeline {
     post {
         always {
             script {
-                // Make sure cleanWs() is inside node context
                 node {
                     cleanWs()
                 }
             }
         }
-
         success {
             echo 'Build succeeded!'
         }
-
         failure {
             echo 'Build failed!'
         }
