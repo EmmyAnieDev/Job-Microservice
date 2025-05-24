@@ -1,0 +1,45 @@
+# Ignore node modules and dependencies (for frontend)
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+package.json
+vite.config.js
+
+# Ignore local environment files (don't expose secrets)
+.env
+.env.* 
+
+# Ignore git metadata
+.git
+.gitignore
+
+# Ignore vendor folder (optional if you want to copy vendor from local, but usually vendor should be built in Docker)
+#vendor
+
+# Ignore IDE/editor configs and system files
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Ignore logs and cache
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Ignore tests (optional, if not needed in container)
+tests
+
+# Ignore build files or temp files
+*.zip
+*.tar.gz
+*.bak
+*.tmp
+
+# Ignore composer.lock and composer.json only if you do composer install inside the container (usually keep them)
+# composer.lock
+# composer.json
+

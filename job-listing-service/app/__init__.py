@@ -35,9 +35,11 @@ def create_app():
 
 
     @app.route('/api', methods=['GET'])
-    def server_check():
+    def api_check():
         return jsonify({
             'message': 'API is running...',
+            'version': '1.0.0',
+            'status': 'healthy'
         }), 200
 
     return app

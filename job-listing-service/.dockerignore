@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff (just in case)
+*.log
+local_settings.py
+
+# Flask instance folder
+instance/
+.webassets-cache
+
+# PyInstaller
+*.manifest
+*.spec
+
+# IDEs / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Mac OS
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+Jenkinsfile
+

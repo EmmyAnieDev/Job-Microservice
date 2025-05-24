@@ -8,6 +8,9 @@ pipeline {
         VENV = "${WORKSPACE}/job-listing-service/venv"
         // Define the service directory
         SERVICE_DIR = "${WORKSPACE}/job-listing-service"
+        // Extend PATH so Jenkins finds docker
+        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        DOCKER_IMAGE = "emmaekwere/job-listing-service:latest"
     }
 
     stages {
@@ -22,6 +25,8 @@ pipeline {
                 script {
                     echo "Working on main branch, direct push workflow"
                 }
+                sh 'echo $PATH'
+                sh 'which docker || echo "docker not found"'
             }
         }
 
@@ -75,10 +80,19 @@ pipeline {
                 }
             }
         }
-
-        stage('Build') {
+        stage('Docker Build & Push') {
             steps {
-                echo 'Building Python package from source...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DUMMY_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+                    sh '''
+                        echo $DOCKER_TOKEN | docker login -u emmaekwere --password-stdin
+
+                        docker build -t emmaekwere/job-listing-service:latest ./job-listing-service
+
+                        docker push emmaekwere/job-listing-service:latest
+
+                        docker logout
+                    '''
+                }
             }
         }
     }
