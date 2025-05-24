@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
   auth-service:
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+    image: emmaekwere/auth-service:latest
     container_name: auth-service
     volumes:
       - ./auth-service:/var/www
@@ -85,9 +83,7 @@ services:
     restart: always
 
   job-listing-service:
-    build:
-      context: ./job-listing-service
-      dockerfile: Dockerfile
+    image: emmaekwere/job-listing-service:latest
     container_name: job-listing-service
     ports:
       - "5000:5000"

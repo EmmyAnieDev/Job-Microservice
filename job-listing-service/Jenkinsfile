@@ -89,8 +89,6 @@ pipeline {
                         docker build -t emmaekwere/job-listing-service:latest ./job-listing-service
 
                         docker push emmaekwere/job-listing-service:latest
-
-                        docker logout
                     '''
                 }
             }

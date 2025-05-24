@@ -9,7 +9,7 @@ from app.api.v1.services.jobs import JobService
 bp = Blueprint('jobs', __name__, url_prefix="/api/v1/jobs")
 logger = logging.getLogger(__name__)
 
-@bp.route('/', methods=['POST'])
+@bp.route('', methods=['POST'])
 def create_job():
     """Create a new job"""
     try:
@@ -27,7 +27,7 @@ def create_job():
         return error_response(500, "An unexpected error occurred")
 
 
-@bp.route('/', methods=['GET'])
+@bp.route('', methods=['GET'])
 def list_jobs():
     """List all jobs"""
     try:

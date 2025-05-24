@@ -25,15 +25,6 @@ def create_app():
     app.register_blueprint(jobs.bp)
 
     # Health check endpoint
-    @app.route('/server', methods=['GET'])
-    def server_check():
-        return jsonify({
-            'message': 'Job Listing API is running',
-            'version': '1.0.0',
-            'status': 'healthy'
-        }), 200
-
-
     @app.route('/api', methods=['GET'])
     def api_check():
         return jsonify({

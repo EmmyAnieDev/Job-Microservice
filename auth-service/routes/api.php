@@ -8,10 +8,6 @@ Route::get('/', function () {
     return response()->json(['status' => 'API is running!...']);
 });
 
-Route::get('/health', function () {
-    return response()->json(['status' => 'Server is healthy!...']);
-});
-
 Route::prefix('v1')->group(function () {
 
     Route::prefix('auth')->group(function () {

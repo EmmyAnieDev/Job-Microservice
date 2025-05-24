@@ -93,21 +93,13 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    def gitCommit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    echo "Git Commit SHA: ${gitCommit}"
-
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DUMMY_USER', passwordVariable: 'DOCKER_TOKEN')]) {
                         sh """
                             echo \$DOCKER_TOKEN | docker login -u emmaekwere --password-stdin
 
                             docker build -t emmaekwere/auth-service:latest ./${PROJECT_DIR}
 
-                            docker tag emmaekwere/auth-service:latest emmaekwere/auth-service:${gitCommit}
-
                             docker push emmaekwere/auth-service:latest
-                            docker push emmaekwere/auth-service:${gitCommit}
-
-                            docker logout
                         """
                     }
                 }

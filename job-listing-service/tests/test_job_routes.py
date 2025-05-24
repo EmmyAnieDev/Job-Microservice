@@ -43,7 +43,7 @@ class TestJobRoutes:
     def test_create_job_success(self, client, sample_job_data, sample_job_response):
         """Test successful job creation"""
         with patch.object(JobService, 'create_job', return_value=sample_job_response):
-            response = client.post('/api/v1/jobs/',
+            response = client.post('/api/v1/jobs',
                                    data=json.dumps(sample_job_data),
                                    content_type='application/json')
 
@@ -56,7 +56,7 @@ class TestJobRoutes:
         """Test job creation with validation error"""
         with patch.object(JobService, 'create_job',
                           side_effect=ValidationError("Title is required")):
-            response = client.post('/api/v1/jobs/',
+            response = client.post('/api/v1/jobs',
                                    data=json.dumps(sample_job_data),
                                    content_type='application/json')
 
@@ -73,7 +73,7 @@ class TestJobRoutes:
         """Test job creation with value error"""
         with patch.object(JobService, 'create_job',
                           side_effect=ValueError("Invalid salary")):
-            response = client.post('/api/v1/jobs/',
+            response = client.post('/api/v1/jobs',
                                    data=json.dumps(sample_job_data),
                                    content_type='application/json')
 
@@ -87,7 +87,7 @@ class TestJobRoutes:
         """Test job creation with unexpected error"""
         with patch.object(JobService, 'create_job',
                           side_effect=Exception("Database connection failed")):
-            response = client.post('/api/v1/jobs/',
+            response = client.post('/api/v1/jobs',
                                    data=json.dumps(sample_job_data),
                                    content_type='application/json')
 
@@ -100,7 +100,7 @@ class TestJobRoutes:
         """Test successful job listing"""
         jobs_list = [sample_job_response]
         with patch.object(JobService, 'get_all_jobs', return_value=jobs_list):
-            response = client.get('/api/v1/jobs/')
+            response = client.get('/api/v1/jobs')
 
             assert response.status_code == 200
             data = json.loads(response.data)
@@ -111,7 +111,7 @@ class TestJobRoutes:
         """Test job listing with error"""
         with patch.object(JobService, 'get_all_jobs',
                           side_effect=Exception("Database error")):
-            response = client.get('/api/v1/jobs/')
+            response = client.get('/api/v1/jobs')
 
             assert response.status_code == 500
             data = json.loads(response.data)
