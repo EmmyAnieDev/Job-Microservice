@@ -21,6 +21,8 @@ class Config:
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_NAME = os.getenv("DB_NAME", "your-postgres-db-name")
 
+    JOB_LISTING_BASE_URL = os.getenv("JOB_LISTING_BASE_URL", "http://localhost:8080")
+
 
 # Initialize config object
 config = Config()

@@ -77,7 +77,7 @@ result.json
 target/
 cython_debug/
 
-# Firebase service account file
+# Firebase services account file
 app/api/db/serviceAccountKey.json
 serviceAccountKey.json
 
