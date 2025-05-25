@@ -7,9 +7,9 @@ from config import BASE_DIR, config
 
 DB_HOST = config.DB_HOST
 DB_PORT = config.DB_PORT
-DB_USER = config.DB_USER
-DB_PASSWORD = config.DB_PASSWORD
-DB_NAME = config.DB_NAME
+POSTGRES_USER = config.POSTGRES_USER
+POSTGRES_PASSWORD = config.POSTGRES_PASSWORD
+POSTGRES_DB = config.POSTGRES_DB
 DB_TYPE = config.DB_TYPE
 
 
@@ -33,7 +33,7 @@ def get_db_engine(test_mode: bool = False):
     elif DB_TYPE == "postgresql":
         # For PostgreSQL, construct the connection string from components
         DATABASE_URL = (
-            f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+            f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DB_HOST}:{DB_PORT}/{POSTGRES_DB}"
         )
         return create_engine(DATABASE_URL)
     else:

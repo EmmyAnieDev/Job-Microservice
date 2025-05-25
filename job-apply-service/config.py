@@ -15,11 +15,11 @@ class Config:
     APP_PORT: int = int(os.getenv("APP_PORT", 8081))
 
     DB_TYPE = os.getenv("DB_TYPE", "postgresql")
-    DB_USER = os.getenv("DB_USER", "your-postgres-db-user")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "your-postgres-db-password")
+    POSTGRES_USER = os.getenv("POSTGRES_USER", "your-postgres-db-user")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "your-postgres-db-password")
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", "5432")
-    DB_NAME = os.getenv("DB_NAME", "your-postgres-db-name")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", "your-postgres-db-name")
 
     JOB_LISTING_BASE_URL = os.getenv("JOB_LISTING_BASE_URL", "http://localhost:8080")
 

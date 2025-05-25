@@ -32,6 +32,8 @@ class JobApplicationService:
         try:
             logger.info(f"Fetching job details for job ID: {job_id} from Flask services")
 
+            print(f"{self.flask_service_url}/api/v1/jobs/{job_id}")
+
             async with httpx.AsyncClient() as client:
                 response = await client.get(f"{self.flask_service_url}/api/v1/jobs/{job_id}")
 
