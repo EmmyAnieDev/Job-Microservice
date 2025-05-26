@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+  namespace: job-application-microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: emmaekwere/auth-service:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_ENV
+              value: "development"
+            - name: DB_CONNECTION
+              value: pgsql
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: DB_HOST
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: DB_DATABASE
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: DB_PASSWORD
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: APP_KEY
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: JWT_SECRET
+            - name: JWT_ALGORITHM
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: JWT_ALGORITHM
+            - name: ACCESS_TIME_TO_LIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: ACCESS_TIME_TO_LIVE
+            - name: REFRESH_TIME_TO_LIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: REFRESH_TIME_TO_LIVE
+            - name: JTI_TIME_TO_LIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: JTI_TIME_TO_LIVE
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: REDIS_HOST
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

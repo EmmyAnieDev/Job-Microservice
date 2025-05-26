@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-listing-deployment
+  namespace: job-application-microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jobs-listing
+  template:
+    metadata:
+      labels:
+        app: jobs-listing
+    spec:
+      containers:
+        - name: jobs-listing
+          image: emmaekwere/job-listing-service:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_ENV
+              value: "development"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: jobs-listing-config
+                  key: DB_HOST
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: jobs-listing-config
+                  key: DB_DATABASE
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: jobs-listing-secret
+                  key: DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jobs-listing-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+

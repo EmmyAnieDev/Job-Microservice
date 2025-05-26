@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jobs-applications-config
+  namespace: job-application-microservices
+data:
+  DB_HOST: jobs-applications-postgres-service
+  DB_DATABASE: jobs_applications_db
+  JOB_LISTING_BASE_URL: http://jobs-listing-service:5000

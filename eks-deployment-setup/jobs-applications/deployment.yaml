@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-applications-deployment
+  namespace: job-application-microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jobs-applications
+  template:
+    metadata:
+      labels:
+        app: jobs-applications
+    spec:
+      containers:
+        - name: jobs-applications
+          image: emmaekwere/job-apply-service:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "development"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: jobs-applications-config
+                  key: DB_HOST
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: jobs-applications-config
+                  key: DB_DATABASE
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: jobs-applications-secret
+                  key: DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jobs-applications-secret
+                  key: DB_PASSWORD
+            - name: JOB_LISTING_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: jobs-applications-config
+                  key: JOB_LISTING_BASE_URL
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
