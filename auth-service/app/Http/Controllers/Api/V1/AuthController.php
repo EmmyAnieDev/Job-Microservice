@@ -179,5 +179,4 @@ class AuthController extends Controller
             ->header('X-User-Email', $decoded['email'])
             ->header('X-Auth-Status', 'validated');
     }
-
 }

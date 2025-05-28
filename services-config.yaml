@@ -1,0 +1,77 @@
+# Configuration file for microservices in the monorepo
+
+services:
+  auth-service:
+    type: php
+    language: php
+    framework: laravel
+    dockerfile: ./auth-service/Dockerfile
+    deployment_file: ./eks-deployment-setup/auth/deployment.yaml
+    service_file: ./eks-deployment-setup/auth/service.yaml
+    test_command: "./vendor/bin/pest"
+    lint_command: "phpcs --standard=PSR12"
+    build_context: ./auth-service
+    container_name: auth
+    dependencies:
+      - composer.json
+      - composer.lock
+
+  job-apply-service:
+    type: python
+    language: python
+    framework: fastapi
+    dockerfile: ./job-apply-service/Dockerfile
+    deployment_file: ./eks-deployment-setup/jobs-applications/deployment.yaml
+    service_file: ./eks-deployment-setup/jobs-applications/service.yaml
+    test_command: "pytest"
+    lint_command: "flake8"
+    build_context: ./job-apply-service
+    container_name: jobs-applications
+    dependencies:
+      - requirements.txt
+
+  job-listing-service:
+    type: python
+    language: python
+    framework: flask
+    dockerfile: ./job-listing-service/Dockerfile
+    deployment_file: ./eks-deployment-setup/jobs-listing/deployment.yaml
+    service_file: ./eks-deployment-setup/jobs-listing/service.yaml
+    test_command: "pytest"
+    lint_command: "flake8"
+    build_context: ./job-listing-service
+    container_name: jobs-listing
+    dependencies:
+      - requirements.txt
+
+
+# Docker registry configuration
+docker:
+  registry: emmaekwere
+  base_url: docker.io
+
+# Versioning configuration
+versioning:
+  initial_version: "1.0.0"
+  strategy: semantic  # semantic, timestamp, or build_number
+  auto_increment: patch  # major, minor, patch
+
+# Git configuration
+git:
+  commit_message_template: "chore: update {service} deployment to {version}"
+  tag_template: "{service}-{version}"
+
+# ArgoCD configuration
+argocd:
+  auto_sync: true
+  sync_policy: automated
+
+# Notification configuration (optional)
+notifications:
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#deployments"
+  email:
+    enabled: false
+    recipients: []
