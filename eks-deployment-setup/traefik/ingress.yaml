@@ -1,0 +1,141 @@
+# Auth Service - Public Routes (No JWT required)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-public-ingress
+  namespace: job-application-microservices
+  annotations: {}
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Exact
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+          - path: /api/v1/auth/register
+            pathType: Exact
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+          - path: /api/v1/auth/login
+            pathType: Exact
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+          - path: /api/v1/auth/validate-token
+            pathType: Exact
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+
+---
+# Auth Service - Protected Routes (JWT required)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-protected-ingress
+  namespace: job-application-microservices
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: |
+      job-application-microservices-jwt-auth@kubernetescrd,
+      job-application-microservices-cors@kubernetescrd,
+      job-application-microservices-rate-limit@kubernetescrd,
+      job-application-microservices-circuit-breaker@kubernetescrd,
+      job-application-microservices-retry@kubernetescrd,
+      job-application-microservices-compress@kubernetescrd,
+      job-application-microservices-api-headers@kubernetescrd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/v1/me
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+          - path: /api/v1/auth/refresh
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+          - path: /api/v1/auth/logout
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 9000
+
+---
+# Jobs Service (Full API Gateway features)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jobs-listing-ingress
+  namespace: job-application-microservices
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: |
+      job-application-microservices-jwt-auth@kubernetescrd,
+      job-application-microservices-cors@kubernetescrd,
+      job-application-microservices-rate-limit@kubernetescrd,
+      job-application-microservices-circuit-breaker@kubernetescrd,
+      job-application-microservices-retry@kubernetescrd,
+      job-application-microservices-compress@kubernetescrd,
+      job-application-microservices-api-headers@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /api/v1/jobs
+            pathType: Prefix
+            backend:
+              service:
+                name: jobs-listing-service
+                port:
+                  number: 5000
+
+---
+# Applications Service (Full API Gateway features)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jobs-applications-ingress
+  namespace: job-application-microservices
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: |
+      job-application-microservices-jwt-auth@kubernetescrd,
+      job-application-microservices-cors@kubernetescrd,
+      job-application-microservices-rate-limit@kubernetescrd,
+      job-application-microservices-circuit-breaker@kubernetescrd,
+      job-application-microservices-retry@kubernetescrd,
+      job-application-microservices-compress@kubernetescrd,
+      job-application-microservices-api-headers@kubernetescrd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/v1/applications
+            pathType: Prefix
+            backend:
+              service:
+                name: jobs-applications-service
+                port:
+                  number: 8000

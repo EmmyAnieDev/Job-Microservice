@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
         - name: auth
-          image: emmaekwere/auth-service:latest
+          image: emmaekwere/auth-service:1.7
           ports:
-            - containerPort: 80
+            - containerPort: 9000
           env:
             - name: APP_ENV
               value: "development"
@@ -73,6 +73,11 @@ spec:
                 configMapKeyRef:
                   name: auth-config
                   key: JTI_TIME_TO_LIVE
+            - name: REDIS_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: REDIS_CLIENT
             - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:

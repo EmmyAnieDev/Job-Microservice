@@ -1,0 +1,139 @@
+# JWT Authentication Middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jwt-auth
+  namespace: job-application-microservices
+spec:
+  forwardAuth:
+    address: http://auth-service:9000/api/v1/auth/validate-token
+    authRequestHeaders:
+      - Authorization
+      - Content-Type
+    authResponseHeaders:
+      - X-User-Id
+      - X-User-Email
+    trustForwardHeader: true
+
+---
+# Rate Limiting Middleware (API Gateway feature)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rate-limit
+  namespace: job-application-microservices
+spec:
+  rateLimit:
+    burst: 100
+    period: 1m
+    sourceCriterion:
+      ipStrategy:
+        depth: 1
+
+---
+# Circuit Breaker Middleware (API Gateway feature)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: circuit-breaker
+  namespace: job-application-microservices
+spec:
+  circuitBreaker:
+    expression: NetworkErrorRatio() > 0.30 || ResponseCodeRatio(500, 600, 0, 600) > 0.25
+
+---
+# CORS Middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: cors
+  namespace: job-application-microservices
+spec:
+  headers:
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowHeaders:
+      - "*"
+    accessControlExposeHeaders:
+      - X-Auth-Token
+      - X-User-Id
+      - X-User-Email
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 3600
+
+---
+# Request/Response Transformation (API Gateway feature)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: api-headers
+  namespace: job-application-microservices
+spec:
+  headers:
+    customRequestHeaders:
+      X-API-Gateway: "traefik"
+      X-Forwarded-Proto: "https"
+    customResponseHeaders:
+      X-API-Version: "v1"
+      X-Response-Time: "{{ .ResponseTime }}"
+
+---
+# Retry Middleware (API Gateway feature)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: retry
+  namespace: job-application-microservices
+spec:
+  retry:
+    attempts: 3
+    initialInterval: 100ms
+
+---
+# Compression Middleware (API Gateway feature)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: compress
+  namespace: job-application-microservices
+spec:
+  compress: {}
+
+
+---
+# Health Check Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-health
+  namespace: job-application-microservices
+spec:
+  selector:
+    app: traefik
+  ports:
+    - name: ping
+      port: 8080
+      targetPort: 8080
+
+---
+# Service Monitor for Prometheus (Monitoring)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik-metrics
+  namespace: job-application-microservices
+spec:
+  selector:
+    matchLabels:
+      app: traefik
+  endpoints:
+    - port: admin
+      path: /metrics
+      interval: 30s

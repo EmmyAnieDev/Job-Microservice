@@ -4,10 +4,11 @@ metadata:
   name: auth-config
   namespace: job-application-microservices
 data:
-  DB_HOST: auth-postgres-service
-  DB_DATABASE: auth_db
-  JWT_ALGORITHM: HS256
-  ACCESS_TIME_TO_LIVE: 600
-  REFRESH_TIME_TO_LIVE: 3600
-  JTI_TIME_TO_LIVE: 600
-  REDIS_HOST: redis-service
+  DB_HOST: "auth-postgres-service"
+  DB_DATABASE: "auth_db"
+  JWT_ALGORITHM: "HS256"
+  ACCESS_TIME_TO_LIVE: "600"
+  REFRESH_TIME_TO_LIVE: "3600"
+  JTI_TIME_TO_LIVE: "600"
+  REDIS_CLIENT: "predis"
+  REDIS_HOST: "redis-service"

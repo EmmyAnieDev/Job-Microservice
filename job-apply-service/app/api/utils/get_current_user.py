@@ -1,10 +1,9 @@
 from fastapi import HTTPException, status, Header
-from typing import Optional
 
 
 def get_current_user(
-        x_user_id: Optional[str] = Header(None),
-        x_user_email: Optional[str] = Header(None)
+        x_user_id: str = Header(None),
+        x_user_email: str = Header(None)
 ) -> dict:
     """
     Extract user info from Kong gateway headers.

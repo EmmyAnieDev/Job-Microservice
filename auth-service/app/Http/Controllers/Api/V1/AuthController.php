@@ -151,4 +151,33 @@ class AuthController extends Controller
 
         return $this->successResponse(null, 'Logged out successfully.');
     }
+
+
+    /**
+     * Validate token for Traefik ForwardAuth middleware
+     * Returns user information as HTTP headers
+     */
+    public function validateToken(Request $request)
+    {
+        $authHeader = $request->header('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return $this->errorResponse('Unauthorized', 401);
+        }
+
+        $token = trim(str_replace('Bearer', '', $authHeader));
+        $decoded = JwtService::validateToken($token);
+
+        if (!$decoded) {
+            return response('Invalid or revoked token', 401);
+        }
+
+        // Return simple text response with user info as headers
+        // Traefik will forward these headers to the downstream service
+        return response('OK', 200)
+            ->header('X-User-Id', (string) $decoded['sub'])
+            ->header('X-User-Email', $decoded['email'])
+            ->header('X-Auth-Status', 'validated');
+    }
+
 }
