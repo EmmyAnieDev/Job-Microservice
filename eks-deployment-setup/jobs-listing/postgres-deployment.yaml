@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: jobs-listing-secret
-                  key: POSTGRES_PASSWORD
+                  key: DB_PASSWORD
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data

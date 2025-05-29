@@ -3,6 +3,16 @@
 # Navigate to traefik directory
 cd traefik
 
+# install the Traefik CRDs
+kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.0/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+
+# install ServiceMonitor CRD
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install prometheus-operator prometheus-community/kube-prometheus-stack
+
+
 echo "🚀 Starting Traefik deployment..."
 
 # 1. Apply RBAC first (permissions needed before deployment)

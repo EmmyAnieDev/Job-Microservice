@@ -93,32 +93,44 @@ To deploy this application, navigate to the `eks-deployment-setup` directory and
     cd eks-deployment-setup
 ```
 
-### 1. Create an EKS Cluster
+### 2. Create an EKS Cluster
 ```bash
-    kubectl apply -f eks-cluster.yaml
+    eksctl create cluster --name micro-eks-cluster --region eu-north-1 --node-type t3.medium
 ```
 
-### 2. Create a Namespace for Your Cluster
+### 3. Create a Namespace for Your Cluster
 ```bash
     kubectl apply -f namespace.yaml
 ```
 
-### 3. Apply Traefik as API Gateway
+### 4. Apply Traefik as API Gateway
 ```bash
     ./apply-traefik.sh
 ```
 
-### 4. Apply Kubernetes Configurations
+### 5. Apply Kubernetes Configurations
 ```bash
     ./apply-k8s-configs.sh
 ```
 
-### 5. Apply Database Migrations
+### 6. Apply Database Migrations
 ```bash
     ./apply-db-migrations.sh
 ```
 
-### 6. Update Redis in the Cluster
+### 7. Install ArgoCD in Your Cluster
+```bash
+    ./apply-argo-cd.sh
+```
+
+- ⚠️ Login into ArgoCD UI `https://localhost:{PORT}`, check your terminal for username and password
+
+### 8. Configure ArgoCD to Sync with GitOps Repository
+```bash
+    kubectl apply -f argo.yaml
+```
+
+### 9. Update Redis in the Cluster
 
 #### Step 1: Exec into the debug pod
 ```bash
