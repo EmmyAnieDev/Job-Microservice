@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: jobs-applications
-          image: emmaekwere/job-apply-service:1.0.1
+          image: emmaekwere/job-apply-service:1.0.2
           ports:
             - containerPort: 8000
           env:
