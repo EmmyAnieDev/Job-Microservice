@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: jobs-listing
-          image: emmaekwere/job-listing-service:1.0.3
+          image: emmaekwere/job-listing-service:1.0.4
           ports:
             - containerPort: 5000
           env:
