@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: emmaekwere/auth-service:1.0.3
+          image: emmaekwere/auth-service:1.0.4
           ports:
             - containerPort: 9000
           env:
