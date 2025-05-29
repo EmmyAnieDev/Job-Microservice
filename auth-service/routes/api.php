@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
 
 Route::get('/', function () {
-    return response()->json(['status' => 'API is running!...']);
+    return response()->json(['status' => '✅ API is live!...']);
 });
 
 Route::get('/health/', function () {

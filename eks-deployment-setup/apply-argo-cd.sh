@@ -6,6 +6,7 @@ kubectl create namespace argocd
 
 echo "📦 Installing ArgoCD components..."
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+sleep 10
 
 # Step 2: Port-forward ArgoCD UI (using 8081 if 8080 is busy)
 echo "🌐 Checking if port 8080 is available..."
