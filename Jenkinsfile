@@ -28,7 +28,7 @@ pipeline {
                     echo "Last commit message: ${lastCommitMessage}"
 
                     if (lastCommitAuthor == "Jenkins CI" || lastCommitMessage.contains("[ci skip]")) {
-                        echo "Skipping build - triggered by Jenkins CI or contains [ci skip]"
+                        echo "Skipping build - triggered by Jenkins CI or contains [ci skip]."
                         currentBuild.result = 'NOT_BUILT'
                         currentBuild.description = "Skipped - Jenkins CI commit"
                         return
