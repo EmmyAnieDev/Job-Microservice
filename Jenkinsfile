@@ -9,6 +9,34 @@ pipeline {
     }
 
     stages {
+
+        stage('Check if should build') {
+            steps {
+                script {
+                    // Skip build if last commit was made by Jenkins
+                    def lastCommitAuthor = sh(
+                        script: "git log -1 --pretty=format:'%an'",
+                        returnStdout: true
+                    ).trim()
+
+                    def lastCommitMessage = sh(
+                        script: "git log -1 --pretty=format:'%s'",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Last commit author: ${lastCommitAuthor}"
+                    echo "Last commit message: ${lastCommitMessage}"
+
+                    if (lastCommitAuthor == "Jenkins CI" || lastCommitMessage.contains("[ci skip]")) {
+                        echo "Skipping build - triggered by Jenkins CI or contains [ci skip]"
+                        currentBuild.result = 'NOT_BUILT'
+                        currentBuild.description = "Skipped - Jenkins CI commit"
+                        return
+                    }
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -333,13 +361,13 @@ def updateDeploymentFile(deploymentFile, imageTag) {
             """
         }
         
-        // Commit and push the deployment file changes
+        // FIXED: Commit and push the deployment file changes with correct email and detached HEAD handling
         sh """
-            git config user.email "jenkins@yourcompany.com"
+            git config user.email "emaduilzjr1@gmail.com"
             git config user.name "Jenkins CI"
             git add ${deploymentFile}
             git commit -m "chore: update ${serviceName} deployment to ${imageTag}" || echo "No changes to commit"
-            git push origin main || echo "Failed to push deployment file changes"
+            git push origin HEAD:main || echo "Failed to push deployment file changes"
         """
     } else {
         echo "Warning: Deployment file ${deploymentFile} not found."
@@ -348,7 +376,7 @@ def updateDeploymentFile(deploymentFile, imageTag) {
 
 def tagVersion(serviceName, version) {
     sh """
-        git config user.email "jenkins@yourcompany.com"
+        git config user.email "emaduilzjr1@gmail.com"
         git config user.name "Jenkins CI"
         git tag -a "${serviceName}-${version}" -m "Release ${serviceName} version ${version}"
         git push origin "${serviceName}-${version}" || echo "Failed to push tag"
