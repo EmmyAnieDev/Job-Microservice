@@ -333,13 +333,13 @@ def updateDeploymentFile(deploymentFile, imageTag) {
             """
         }
         
-        // Commit and push the deployment file changes
+        // FIXED: Commit and push the deployment file changes with correct email and detached HEAD handling
         sh """
-            git config user.email "jenkins@yourcompany.com"
+            git config user.email "emaduilzjr1@gmail.com"
             git config user.name "Jenkins CI"
             git add ${deploymentFile}
             git commit -m "chore: update ${serviceName} deployment to ${imageTag}" || echo "No changes to commit"
-            git push origin main || echo "Failed to push deployment file changes"
+            git push origin HEAD:main || echo "Failed to push deployment file changes"
         """
     } else {
         echo "Warning: Deployment file ${deploymentFile} not found."
@@ -348,7 +348,7 @@ def updateDeploymentFile(deploymentFile, imageTag) {
 
 def tagVersion(serviceName, version) {
     sh """
-        git config user.email "jenkins@yourcompany.com"
+        git config user.email "emaduilzjr1@gmail.com"
         git config user.name "Jenkins CI"
         git tag -a "${serviceName}-${version}" -m "Release ${serviceName} version ${version}"
         git push origin "${serviceName}-${version}" || echo "Failed to push tag"
