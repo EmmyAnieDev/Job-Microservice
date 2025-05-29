@@ -9,11 +9,10 @@ pipeline {
     }
 
     stages {
-
-        stage('Check if should build') {
+        stage('Check Build Trigger') {
             steps {
                 script {
-                    // Skip build if last commit was made by Jenkins
+                    // CRITICAL: Stop infinite loop by checking if Jenkins triggered this build
                     def lastCommitAuthor = sh(
                         script: "git log -1 --pretty=format:'%an'",
                         returnStdout: true
@@ -24,15 +23,29 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
-                    echo "Last commit author: ${lastCommitAuthor}"
-                    echo "Last commit message: ${lastCommitMessage}"
+                    echo "🔍 Last commit author: ${lastCommitAuthor}"
+                    echo "🔍 Last commit message: ${lastCommitMessage}"
+                    echo "🔍 Build cause: ${currentBuild.getBuildCauses()}"
 
-                    if (lastCommitAuthor == "Jenkins CI" || lastCommitMessage.contains("[ci skip]")) {
-                        echo "Skipping build - triggered by Jenkins CI or contains [ci skip]"
-                        currentBuild.result = 'NOT_BUILT'
-                        currentBuild.description = "Skipped - Jenkins CI commit"
-                        return
+                    // Stop build if triggered by Jenkins CI commits
+                    if (lastCommitAuthor == "Jenkins CI") {
+                        echo "🛑 STOPPING BUILD - This was triggered by a Jenkins CI commit"
+                        echo "🛑 This prevents infinite build loops"
+                        currentBuild.result = 'ABORTED'
+                        currentBuild.description = "Skipped - Jenkins CI automated commit"
+                        error("Build skipped to prevent infinite loop")
                     }
+
+                    // Also check for [ci skip] or [skip ci] patterns
+                    if (lastCommitMessage.toLowerCase().contains("[ci skip]") ||
+                        lastCommitMessage.toLowerCase().contains("[skip ci]")) {
+                        echo "🛑 STOPPING BUILD - Commit message contains skip instruction"
+                        currentBuild.result = 'ABORTED'
+                        currentBuild.description = "Skipped - [ci skip] in commit message"
+                        error("Build skipped due to [ci skip] in commit message")
+                    }
+
+                    echo "✅ Build should proceed - triggered by legitimate code change"
                 }
             }
         }
@@ -75,19 +88,19 @@ pipeline {
                             ]
                         ]
                     }
-                    
+
                     def services = servicesConfig.services
 
                     // Detect changed services
                     def changedServices = []
-                    
+
                     if (env.CHANGE_ID) {
                         // For Pull Requests - compare with target branch
                         def changedFiles = sh(
                             script: "git diff --name-only origin/${env.CHANGE_TARGET}...HEAD",
                             returnStdout: true
                         ).trim().split('\n')
-                        
+
                         services.each { serviceName, config ->
                             if (changedFiles.any { it.startsWith("${serviceName}/") }) {
                                 changedServices.add(serviceName)
@@ -99,7 +112,7 @@ pipeline {
                             script: "git diff --name-only HEAD~1 HEAD",
                             returnStdout: true
                         ).trim().split('\n')
-                        
+
                         services.each { serviceName, config ->
                             if (changedFiles.any { it.startsWith("${serviceName}/") }) {
                                 changedServices.add(serviceName)
@@ -116,7 +129,7 @@ pipeline {
                     // Store results for later stages
                     env.CHANGED_SERVICES = changedServices.join(',')
                     env.SERVICES_CONFIG = writeJSON returnText: true, json: services
-                    
+
                     echo "Services to build: ${changedServices.join(', ')}"
                 }
             }
@@ -127,16 +140,16 @@ pipeline {
                 script {
                     def changedServices = env.CHANGED_SERVICES.split(',')
                     def servicesConfig = readJSON text: env.SERVICES_CONFIG
-                    
+
                     // Build each changed service in parallel
                     def buildStages = [:]
-                    
+
                     changedServices.each { serviceName ->
                         buildStages[serviceName] = {
                             buildService(serviceName, servicesConfig[serviceName])
                         }
                     }
-                    
+
                     parallel buildStages
                 }
             }
@@ -159,14 +172,14 @@ pipeline {
 def buildService(serviceName, serviceConfig) {
     stage("Build ${serviceName}") {
         echo "Building service: ${serviceName}"
-        
+
         // Get next version for this service
         def version = getNextVersion(serviceName)
         def imageTag = "${env.DOCKER_REGISTRY}/${serviceName}:${version}"
         def latestTag = "${env.DOCKER_REGISTRY}/${serviceName}:latest"
-        
+
         echo "Building ${serviceName} version ${version}"
-        
+
         try {
             // Setup stage based on service type
             if (serviceConfig.type == 'php') {
@@ -178,18 +191,18 @@ def buildService(serviceName, serviceConfig) {
                 lintPythonService(serviceName)
                 testPythonService(serviceName)
             }
-            
+
             // Build and push Docker image
             buildAndPushImage(serviceName, imageTag, latestTag)
-            
+
             // Update deployment file
             updateDeploymentFile(serviceConfig.deployment_file, imageTag)
-            
+
             // Tag the version in git
             tagVersion(serviceName, version)
-            
+
             echo "Successfully built ${serviceName} version ${version}"
-            
+
         } catch (Exception e) {
             error "Failed to build ${serviceName}: ${e.getMessage()}"
         }
@@ -203,7 +216,7 @@ def getNextVersion(serviceName) {
             script: "git tag -l '${serviceName}-*' | sort -V | tail -n1",
             returnStdout: true
         ).trim()
-        
+
         if (latestTag) {
             // Extract version number and increment patch version
             def version = latestTag.replace("${serviceName}-", "")
@@ -211,7 +224,7 @@ def getNextVersion(serviceName) {
             def major = versionParts[0] as Integer
             def minor = versionParts[1] as Integer
             def patch = (versionParts[2] as Integer) + 1
-            
+
             return "${major}.${minor}.${patch}"
         } else {
             // First build for this service
@@ -278,7 +291,7 @@ def testPhpService(serviceName) {
 def setupPythonService(serviceName) {
     def pythonPath = sh(script: 'which python3', returnStdout: true).trim()
     def venv = "${env.WORKSPACE}/${serviceName}/venv"
-    
+
     dir(serviceName) {
         sh """
             if [ ! -f requirements.txt ]; then
@@ -296,7 +309,7 @@ def setupPythonService(serviceName) {
 
 def lintPythonService(serviceName) {
     def venv = "${env.WORKSPACE}/${serviceName}/venv"
-    
+
     dir(serviceName) {
         sh """
             . "${venv}/bin/activate"
@@ -308,7 +321,7 @@ def lintPythonService(serviceName) {
 
 def testPythonService(serviceName) {
     def venv = "${env.WORKSPACE}/${serviceName}/venv"
-    
+
     dir(serviceName) {
         sh """
             . "${venv}/bin/activate"
@@ -316,7 +329,7 @@ def testPythonService(serviceName) {
             mkdir -p test-reports
             pytest --junitxml=test-reports/results.xml --cov=. --cov-report=xml:coverage.xml
         """
-        
+
         // Publish test results
         junit allowEmptyResults: true, testResults: 'test-reports/results.xml'
         publishCoverage adapters: [coberturaAdapter(path: 'coverage.xml')]
@@ -327,14 +340,14 @@ def buildAndPushImage(serviceName, imageTag, latestTag) {
     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DUMMY_USER', passwordVariable: 'DOCKER_TOKEN')]) {
         sh """
             echo \$DOCKER_TOKEN | docker login -u ${env.DOCKER_REGISTRY} --password-stdin
-            
+
             # Build with version tag and latest tag
             docker build -t ${imageTag} -t ${latestTag} ./${serviceName}
-            
+
             # Push both tags
             docker push ${imageTag}
             docker push ${latestTag}
-            
+
             echo "Successfully pushed ${imageTag} and ${latestTag}"
         """
     }
@@ -342,7 +355,7 @@ def buildAndPushImage(serviceName, imageTag, latestTag) {
 
 def updateDeploymentFile(deploymentFile, imageTag) {
     def serviceName = imageTag.split('/')[1].split(':')[0]
-    
+
     if (fileExists(deploymentFile)) {
         // Use the update script if available, otherwise fallback to sed
         if (fileExists('update-deployment.sh')) {
@@ -354,19 +367,20 @@ def updateDeploymentFile(deploymentFile, imageTag) {
             sh """
                 # Update the image tag in the deployment file
                 sed -i.bak 's|image: ${env.DOCKER_REGISTRY}/${serviceName}:[^[:space:]]*|image: ${imageTag}|g' ${deploymentFile}
-                
+
                 # Show the changes
                 echo "Updated ${deploymentFile} with new image: ${imageTag}"
                 git diff ${deploymentFile} || true
             """
         }
-        
+
         // FIXED: Commit and push the deployment file changes with correct email and detached HEAD handling
+        // Add [ci skip] to prevent Jenkins from triggering itself
         sh """
             git config user.email "emaduilzjr1@gmail.com"
             git config user.name "Jenkins CI"
             git add ${deploymentFile}
-            git commit -m "chore: update ${serviceName} deployment to ${imageTag}" || echo "No changes to commit"
+            git commit -m "chore: update ${serviceName} deployment to ${imageTag} [ci skip]" || echo "No changes to commit"
             git push origin HEAD:main || echo "Failed to push deployment file changes"
         """
     } else {
