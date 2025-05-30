@@ -65,7 +65,6 @@ job-listing-service/
 ├── alembic.ini               # Alembic configuration file
 ├── config.py                 # Application configuration
 ├── Dockerfile                # Docker container configuration
-├── Jenkinsfile              # Jenkins CI/CD pipeline
 ├── main.py                  # Application entry point
 └── requirements.txt         # Python dependencies
 ```
@@ -256,11 +255,12 @@ Execute the test suite:
 
 ### Docker Compose
 
-In the main Job-Microservice directory, add to `docker-compose.yml`:
+In the main Job-Microservice directory, cd to `docker-compose.yml`:
 
 Run with Docker Compose:
 
 ```bash
+    cd ..
     docker-compose up -d --build
 ```
 

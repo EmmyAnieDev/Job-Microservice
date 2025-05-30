@@ -2,6 +2,15 @@
 
 A comprehensive Kubernetes-based microservices application using Traefik as an API Gateway with advanced routing, authentication, and monitoring capabilities.
 
+## ⚠️ Test Environment Disclaimer
+
+This project is a test/demo application. All secrets, keys, and environment variables used here are for testing purposes only.
+
+- ✅ Do NOT reuse any credentials in this Project, it has been completely deleted after testing.
+- ✅ All infrastructure (Kubernetes clusters, databases, services, secrets, etc.) has been completely deleted after testing.
+- ✅ This repository is shared strictly for educational and demonstration purposes.
+
+
 ## 🏗️ Architecture Overview
 
 This project implements a microservices architecture with:
@@ -58,6 +67,9 @@ job-microservice-app/
 ├── .env.sample
 ├── .gitignore
 ├── docker-compose.yaml
+├── Jenkinsfile
+├── service-config.yaml
+├── update-deployment.sh
 └── README.md
 ```
 
@@ -75,14 +87,6 @@ job-microservice-app/
 - `POST /api/v1/auth/logout` - User logout
 - `GET|POST|PUT|DELETE /api/v1/jobs/*` - Jobs management
 - `GET|POST|PUT|DELETE /api/v1/applications/*` - Applications management
-
-## ⚠️ Test Environment Disclaimer
-
-This project is a test/demo application. All secrets, keys, and environment variables used here are for testing purposes only.
-
-- ✅ Do NOT reuse any credentials in this Project, it has been completely deleted after testing. 
-- ✅ All infrastructure (Kubernetes clusters, databases, services, secrets, etc.) has been completely deleted after testing.
-- ✅ This repository is shared strictly for educational and demonstration purposes.
 
 ## 🚀 Deployment Instructions
 

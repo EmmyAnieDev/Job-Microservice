@@ -65,7 +65,6 @@ job-application-service/
 ├── .gitignore                # Git ignore file
 ├── alembic.ini               # Alembic configuration file
 ├── Dockerfile                # Docker container configuration
-├── Jenkinsfile              # Jenkins CI/CD pipeline
 ├── main.py                  # Application entry point
 └── requirements.txt         # Python dependencies
 ```
@@ -268,12 +267,13 @@ Execute the test suite:
 
 ### Docker Compose
 
-In the main Job-Microservice directory, add to `docker-compose.yml`:
+In the main Job-Microservice directory, cd to `docker-compose.yml`:
 
 Run with Docker Compose:
 
 ```bash
-docker-compose up -d --build
+    cd ..
+    docker-compose up -d --build
 ```
 
 **Note**: This is the job application service for the Job Microservice Application. Make sure to also set up the Laravel (authentication) and Flask (job listings) services for the complete application to function properly.

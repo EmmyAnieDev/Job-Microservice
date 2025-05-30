@@ -95,7 +95,6 @@ auth-service/
 ├── composer.json             # PHP dependencies
 ├── composer.lock             # Locked PHP dependencies
 ├── Dockerfile                # Docker container configuration
-├── Jenkinsfile              # Jenkins CI/CD pipeline
 ├── package.json             # Node.js dependencies
 ├── package-lock.json        # Locked Node.js dependencies
 ├── phpunit.xml              # PHPUnit configuration
@@ -304,20 +303,21 @@ Enable debug mode for detailed error messages:
 
 ```bash
     # Build the image
-    docker build -t job-application-service .
+    docker build -t auth-service .
     
     # Run the container
-    docker run -p 8001:8001 --env-file .env job-application-service
+    docker run -p 8001:8001 --env-file .env auth-service
 ```
 
 ### Docker Compose
 
-In the main Job-Microservice directory, add to `docker-compose.yml`:
+In the main Job-Microservice directory, cd to `docker-compose.yml`:
 
 Run with Docker Compose:
 
 ```bash
-docker-compose up -d --build
+    cd ..
+    docker-compose up -d --build
 ```
 
 **Note**: This is the authentication service for the Job Microservice Application. Make sure to also set up the Flask (job listings) and FastAPI (job applications) services for the complete application to function properly.

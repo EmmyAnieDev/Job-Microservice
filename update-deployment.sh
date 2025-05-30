@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to update Kubernetes deployment files with new image tags
+# Script to update Kubernetes deployment files after CI builds with new image tags
 
 set -e
 
