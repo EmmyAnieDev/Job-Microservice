@@ -58,6 +58,9 @@ job-microservice-app/
 ├── .env.sample
 ├── .gitignore
 ├── docker-compose.yaml
+├── Jenkinsfile
+├── service-config.yaml
+├── update-deployment.sh
 └── README.md
 ```
 
