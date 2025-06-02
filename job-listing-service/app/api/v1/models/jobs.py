@@ -12,8 +12,8 @@ class Job(db.Model):
     company = db.Column(db.String(255), nullable=False)
     location = db.Column(db.String(255), nullable=True)
     salary = db.Column(db.Float, nullable=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    date_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f"<Job {self.title}>"

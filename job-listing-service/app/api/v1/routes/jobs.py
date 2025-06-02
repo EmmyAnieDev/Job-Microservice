@@ -11,7 +11,20 @@ logger = logging.getLogger(__name__)
 
 @bp.route('', methods=['POST'])
 def create_job():
-    """Create a new job"""
+    """
+    Create a new job.
+
+    This endpoint creates a job using the JSON payload provided in the request body.
+
+    Args:
+        None directly (reads JSON payload from request).
+
+    Returns:
+        JSON response:
+            - 201 Created with the created job data.
+            - 400 Bad Request if input validation fails.
+            - 500 Internal Server Error for unexpected issues.
+    """
     try:
         data = request.get_json()
         job = JobService.create_job(data)
@@ -29,7 +42,19 @@ def create_job():
 
 @bp.route('', methods=['GET'])
 def list_jobs():
-    """List all jobs"""
+    """
+    List all jobs.
+
+    Fetches and returns a list of all available jobs.
+
+    Args:
+        None
+
+    Returns:
+        JSON response:
+            - 200 OK with a list of jobs.
+            - 500 Internal Server Error for unexpected issues.
+    """
     try:
         jobs = JobService.get_all_jobs()
         return success_response(200, "Jobs fetched successfully", jobs)
@@ -40,7 +65,20 @@ def list_jobs():
 
 @bp.route('/<int:job_id>', methods=['GET'])
 def get_job(job_id):
-    """Get a job by ID"""
+    """
+    Get a specific job by ID.
+
+    Fetches a single job using its unique identifier.
+
+    Args:
+        job_id (int): The unique ID of the job to retrieve.
+
+    Returns:
+        JSON response:
+            - 200 OK with the job data.
+            - 404 Not Found if the job does not exist.
+            - 500 Internal Server Error for unexpected issues.
+    """
     try:
         job = JobService.get_job(job_id)
         return success_response(200, "Job fetched successfully", job)
@@ -54,7 +92,22 @@ def get_job(job_id):
 
 @bp.route('/<int:job_id>', methods=['PUT'])
 def update_job(job_id):
-    """Update a job"""
+    """
+    Update a job.
+
+    Updates job details using the provided JSON payload.
+
+    Args:
+        job_id (int): The unique ID of the job to update.
+        JSON body (dict): The updated job data.
+
+    Returns:
+        JSON response:
+            - 200 OK with the updated job data.
+            - 400 Bad Request for validation errors.
+            - 404 Not Found if the job does not exist.
+            - 500 Internal Server Error for unexpected issues.
+    """
     try:
         data = request.get_json()
         job = JobService.update_job(job_id, data)
@@ -72,7 +125,20 @@ def update_job(job_id):
 
 @bp.route('/<int:job_id>', methods=['DELETE'])
 def delete_job(job_id):
-    """Delete a job"""
+    """
+    Delete a job.
+
+    Permanently deletes a job from the database.
+
+    Args:
+        job_id (int): The unique ID of the job to delete.
+
+    Returns:
+        JSON response:
+            - 200 OK if deletion is successful.
+            - 404 Not Found if the job does not exist.
+            - 500 Internal Server Error for unexpected issues.
+    """
     try:
         JobService.delete_job(job_id)
         return success_response(200, "Job deleted successfully", None)

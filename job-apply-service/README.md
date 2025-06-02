@@ -220,12 +220,12 @@ For production deployment with Gunicorn + Uvicorn:
 
 ### Job Application Routes
 
-| Method | Endpoint                              | Description                        | Authentication              |
-|--------|---------------------------------------|------------------------------------|-----------------------------|
-| GET    | `/`                                   | API status check                   | No                          |
-| GET    | `/health`                             | Health check endpoint              | No                          |
-| POST   | `/api/v1/applications/apply`          | Apply for a job                    | Depends on JWT from Headers |
-| DELETE | `/api/v1/applications/{app_id}`       | Delete/withdraw application        | Depends on JWT from Headers |
+| Method | Endpoint                        | Description                        | Authentication              |
+|--------|---------------------------------|------------------------------------|-----------------------------|
+| GET    | `/`                             | API status check                   | No                          |
+| GET    | `/health`                       | Health check endpoint              | No                          |
+| POST   | `/api/v1/applications`          | Apply for a job                    | Depends on JWT from Headers |
+| DELETE | `/api/v1/applications/{app_id}` | Delete/withdraw application        | Depends on JWT from Headers |
 
 
 ## Testing

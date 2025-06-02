@@ -13,10 +13,26 @@ job_schema = JobSchema()
 jobs_schema = JobSchema(many=True)
 
 class JobService:
+    """
+    Service class for managing job-related operations including creation,
+    retrieval, update, and deletion of job records.
+    """
 
     @staticmethod
     def create_job(data):
-        """Create a new job."""
+        """
+        Create a new job entry in the database.
+
+        Args:
+            data (dict): Dictionary containing job data to be validated and stored.
+
+        Returns:
+            dict: Serialized job data of the created job.
+
+        Raises:
+            ValidationError: If input data fails schema validation.
+            Exception: If a database error occurs during job creation.
+        """
         try:
             job_data = job_schema.load(data)
             job = Job(**job_data)
@@ -34,7 +50,15 @@ class JobService:
 
     @staticmethod
     def get_all_jobs():
-        """Get all jobs."""
+        """
+        Retrieve all job entries from the database.
+
+        Returns:
+            list: A list of serialized job data.
+
+        Raises:
+            Exception: If a database error occurs while retrieving jobs.
+        """
         try:
             jobs = Job.query.all()
             logger.info(f"Retrieved {len(jobs)} jobs")
@@ -45,7 +69,18 @@ class JobService:
 
     @staticmethod
     def get_job(job_id):
-        """Get a job by ID."""
+        """
+        Retrieve a single job entry by its ID.
+
+        Args:
+            job_id (int): ID of the job to retrieve.
+
+        Returns:
+            dict: Serialized job data.
+
+        Raises:
+            ValueError: If no job with the specified ID exists.
+        """
         job = Job.query.get(job_id)
         if not job:
             logger.warning(f"Job ID {job_id} not found")
@@ -55,7 +90,21 @@ class JobService:
 
     @staticmethod
     def update_job(job_id, data):
-        """Update a job by ID."""
+        """
+        Update an existing job entry by its ID.
+
+        Args:
+            job_id (int): ID of the job to update.
+            data (dict): Dictionary containing updated job data.
+
+        Returns:
+            dict: Serialized job data after update.
+
+        Raises:
+            ValueError: If the job with the given ID does not exist.
+            ValidationError: If the updated data fails schema validation.
+            Exception: If a database error occurs during update.
+        """
         job = Job.query.get(job_id)
         if not job:
             logger.warning(f"Job ID {job_id} not found for update")
@@ -78,7 +127,16 @@ class JobService:
 
     @staticmethod
     def delete_job(job_id):
-        """Delete a job by ID."""
+        """
+        Delete a job entry by its ID.
+
+        Args:
+            job_id (int): ID of the job to delete.
+
+        Raises:
+            ValueError: If the job with the given ID does not exist.
+            Exception: If a database error occurs during deletion.
+        """
         job = Job.query.get(job_id)
         if not job:
             logger.warning(f"Job ID {job_id} not found for deletion")
